@@ -1,22 +1,24 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
+// Hum sirf ek hi main object use karenge jo humne index.ts mein banaya hai
+import { allLanguagesData } from "@/app/data"; 
 
 export default function Home() {
-  const [view, setView] = useState("welcome"); // Views: welcome -> lang-select
-const [nativeLang, setNativeLang] = useState(""); // Jo user ko aati hai
-  const [targetLang, setTargetLang] = useState(""); // Jo user seekhna chahta hai
-  // Hamari Indian Languages ka Mega Data
-  const [currentStep, setCurrentStep] = useState(0); // Kaunse sawal pe hain
-const [score, setScore] = useState(0);
-const [streak, setStreak] = useState(0); // Shuruat mein zero
-const [selectedOption, setSelectedOption] = useState(""); // User ne kya choose kiya
-const [isCorrect, setIsCorrect] = useState<boolean | null>(null); // Sahi hai ya galat
-const [showPanel, setShowPanel] = useState(false); // Panel dikhana hai ya nahi
-// Sample Questions (Baad mein hum har language ke liye alag karenge)
-const questions = [
-  { id: 1, question: "Translate 'Hello'", options: ["Namaste", "Alvida", "Dhanyawad"], answer: "Namaste" },
-  { id: 2, question: "How do you say 'Water'?", options: ["Khana", "Paani", "Ghar"], answer: "Paani" },
-];
+  const [view, setView] = useState("welcome"); 
+  const [sourceLang, setSourceLang] = useState("hindi"); // Default user ki bhasha
+  const [targetLang, setTargetLang] = useState("english"); // Jo seekhna hai
+
+  const [currentStep, setCurrentStep] = useState(0); 
+  const [streak, setStreak] = useState(0); 
+  const [selectedOption, setSelectedOption] = useState(""); 
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null); 
+  const [showPanel, setShowPanel] = useState(false); 
+
+  // --- DATA EXTRACTION (FIXED) ---
+  // allLanguagesData[sourceLang][targetLang] se data uthayenge
+  const courseData = allLanguagesData[sourceLang]?.[targetLang] || allLanguagesData["hindi"]["english"];
+  const sections = courseData?.sections || [];
+  const questions = sections[0]?.units[0]?.questions || [];
   const languages = [
     { name: "Assamese", flag: "☕" }, // Tea gardens
     { name: "Bengali", flag: "🐟" },  // Maach-Bhaat
@@ -41,31 +43,6 @@ const questions = [
     { name: "Telugu", flag: "🎥" },    // Tollywood/Cinema
     { name: "Urdu", flag: "✍️" },     // Poetry/Shayari
   ];
-  // Line 30 ke paas:
-const sections = [
-  {
-    name: "Section 1: Rookie",
-    color: "bg-[#58cc02]",
-    units: [
-      { id: 1, title: "Essential Phrases", status: "current", icon: "👋" },
-      { id: 2, title: "Greetings", status: "locked", icon: "💬" },
-      { id: 3, title: "Numbers 1-10", status: "locked", icon: "🔢" },
-      { id: 4, title: "Basic Food", status: "locked", icon: "🍎" },
-      { id: 5, title: "Daily Routine", status: "locked", icon: "🌅" },
-    ]
-  },
-  {
-    name: "Section 2: Explorer",
-    color: "bg-[#1cb0f6]",
-    units: [
-      { id: 6, title: "Family Members", status: "locked", icon: "🏠" },
-      { id: 7, title: "Shopping", status: "locked", icon: "🛍️" },
-      { id: 8, title: "Directions", status: "locked", icon: "📍" },
-      // ... aise hi hum 14 units tak le ja sakte hain
-    ]
-  }
-];
-
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 font-sans text-[#4b4b4b]">
       
@@ -148,7 +125,7 @@ const sections = [
 
     {/* Section-wise snake path */}
     <div className="flex flex-col w-full px-4 pb-20">
-      {sections.map((section) => (
+      {sections.map((section: any) => (
         <div key={section.name} className="flex flex-col items-center w-full mb-12">
           
           {/* Section Banner */}
@@ -159,7 +136,7 @@ const sections = [
 
           {/* Units loop inside each section */}
           <div className="flex flex-col gap-14 items-center w-full">
-            {section.units.map((unit, index) => (
+            {section.units.map((unit: any, index: number) => (
               <div 
                 key={unit.id} 
                 className="flex flex-col items-center"
@@ -206,7 +183,7 @@ const sections = [
     <div className="flex-1 px-6 flex flex-col items-center">
       <h2 className="text-2xl font-[900] text-[#3c3c3c] w-full mb-8">{questions[currentStep].question}</h2>
       <div className="grid grid-cols-1 gap-3 w-full">
-        {questions[currentStep].options.map((option) => (
+        {questions[currentStep].options.map((option:string) => (
           <button 
             key={option} 
             onClick={() => !showPanel && setSelectedOption(option)}
